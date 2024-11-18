@@ -1,0 +1,59 @@
+:root {
+  --bs-primary: #00b298;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* RTL specific styles */
+[dir="rtl"] .navbar-nav {
+  padding-right: 0;
+}
+
+[dir="rtl"] .form-label {
+  text-align: right;
+}
+
+[dir="rtl"] .btn-primary:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+[dir="rtl"] .display-4 {
+  color: #0d6efd;
+  margin-bottom: 1rem;
+}
+
+[dir="rtl"] .lead {
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+/* Fix Arabic text alignment */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* Fix dropdown alignment */
+[dir="rtl"] .dropdown-menu {
+  text-align: right;
+  left: auto;
+  right: 0;
+}
+
+/* Fix form validation messages */
+[dir="rtl"] .invalid-feedback,
+[dir="rtl"] .valid-feedback {
+  text-align: right;
+}
+
+/* Fix button icons alignment */
+[dir="rtl"] .btn i {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}

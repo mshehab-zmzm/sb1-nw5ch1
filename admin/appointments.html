@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إدارة المواعيد - خدمة زمزم للاستشارات الصحية</title>
+  <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .table-input {
+      border: none;
+      background: transparent;
+      width: 100%;
+      padding: 0.375rem 0;
+    }
+    .table-input:focus {
+      outline: none;
+      background-color: #f8f9fa;
+    }
+    .new-row td {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">خدمة زمزم للاستشارات الصحية</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/appointments.html">إدارة المواعيد</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5" x-data="appointmentsManager">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>إدارة المواعيد المتاحة</h2>
+      <button class="btn btn-primary" @click="addNewRow">إضافة موعد جديد</button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>العيادة</th>
+            <th>من تاريخ</th>
+            <th>إلى تاريخ</th>
+            <th>من الساعة</th>
+            <th>إلى الساعة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- New Appointments -->
+          <template x-for="(row, index) in newAppointments" :key="'new-' + index">
+            <tr class="new-row">
+              <td>
+                <select class="form-select" x-model="row.clinic">
+                  <option value="">اختر العيادة</option>
+                  <template x-for="clinic in clinics" :key="clinic.id">
+                    <option :value="clinic.id" x-text="clinic.name"></option>
+                  </template>
+                </select>
+              </td>
+              <td><input type="date" class="form-control" x-model="row.fromDate"></td>
+              <td><input type="date" class="form-control" x-model="row.toDate"></td>
+              <td><input type="time" class="form-control" x-model="row.fromTime"></td>
+              <td><input type="time" class="form-control" x-model="row.toTime"></td>
+              <td>
+                <button class="btn btn-sm btn-danger" @click="removeNewRow(index)">حذف</button>
+              </td>
+            </tr>
+          </template>
+
+          <!-- Existing Appointments -->
+          <template x-for="appointment in appointments" :key="appointment.id">
+            <tr>
+              <td x-text="getClinicName(appointment.clinic)"></td>
+              <td x-text="formatDate(appointment.fromDate)"></td>
+              <td x-text="formatDate(appointment.toDate)"></td>
+              <td x-text="formatTime(appointment.fromTime)"></td>
+              <td x-text="formatTime(appointment.toTime)"></td>
+              <td>
+                <button class="btn btn-sm btn-danger" 
+                        @click="deleteAppointment(appointment.id)"
+                        :disabled="appointment.isBooked">
+                  حذف
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3">
+      <button class="btn btn-success" @click="saveAppointments" :disabled="!newAppointments.length">
+        حفظ المواعيد الجديدة
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/admin/js/appointments.js"></script>
+</body>
+</html>

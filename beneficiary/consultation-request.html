@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>طلب استشارة جديدة - خدمة زمزم للاستشارات الصحية</title>
+  <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .required::after {
+      content: " *";
+      color: red;
+    }
+
+    .supporting-doc {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .supporting-doc-summary {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .steps-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .step-item {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-item.active {
+      color: var(--bs-primary);
+      font-weight: bold;
+    }
+
+    .step-item.completed {
+      color: var(--bs-success);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">خدمة زمزم للاستشارات الصحية</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5 mb-5" x-data="consultationRequest">
+    <div class="steps-indicator mb-4">
+      <div class="step-item" :class="{ 'active': currentStep === 1, 'completed': currentStep > 1 }">
+        معلومات المريض
+      </div>
+      <div class="step-item" :class="{ 'active': currentStep === 2, 'completed': currentStep > 2 }">
+        وصف الحالة
+      </div>
+      <div class="step-item" :class="{ 'active': currentStep === 3, 'completed': currentStep > 3 }">
+        اختيار الموعد
+      </div>
+      <div class="step-item" :class="{ 'active': currentStep === 4 }">
+        الملخص
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <!-- Step 1: Patient Information -->
+        <div x-show="currentStep === 1">
+          <h3 class="card-title mb-4">معلومات المريض</h3>
+
+          <div class="mb-3">
+            <label class="form-label required">الاسم الكامل</label>
+            <input type="text" class="form-control" x-model="formData.name" @blur="validateField('name')">
+            <div class="text-danger" x-show="touched.name && errors.name" x-text="errors.name"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">تاريخ الميلاد</label>
+            <input type="date" class="form-control" x-model="formData.birthDate" @blur="validateField('birthDate')">
+            <div class="text-danger" x-show="touched.birthDate && errors.birthDate" x-text="errors.birthDate">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">الجنس</label>
+            <select class="form-select" x-model="formData.gender" @blur="validateField('gender')">
+              <option value="">اختر الجنس</option>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+            <div class="text-danger" x-show="touched.gender && errors.gender" x-text="errors.gender"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">رقم الجوال</label>
+            <input type="tel" class="form-control" x-model="formData.mobile" @blur="validateField('mobile')"
+              placeholder="05xxxxxxxx">
+            <div class="text-danger" x-show="touched.mobile && errors.mobile" x-text="errors.mobile"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">رقم الهوية</label>
+            <input type="text" class="form-control" x-model="formData.nationalId" @blur="validateField('nationalId')">
+            <div class="text-danger" x-show="touched.nationalId && errors.nationalId" x-text="errors.nationalId">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Issue Description -->
+        <div x-show="currentStep === 2">
+          <h3 class="card-title mb-4">وصف الحالة</h3>
+
+          <div class="mb-3">
+            <label class="form-label required">وصف المشكلة الصحية</label>
+            <textarea class="form-control" rows="4" x-model="formData.description"
+              @blur="validateField('description')"></textarea>
+            <div class="text-danger" x-show="touched.description && errors.description" x-text="errors.description">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">مدة ظهور الأعراض</label>
+            <input type="text" class="form-control" x-model="formData.symptomsDuration"
+              @blur="validateField('symptomsDuration')">
+            <div class="text-danger" x-show="touched.symptomsDuration && errors.symptomsDuration"
+              x-text="errors.symptomsDuration"></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Appointment Selection -->
+        <div x-show="currentStep === 3">
+          <h3 class="card-title mb-4">اختيار الموعد</h3>
+
+          <div class="mb-3">
+            <label class="form-label required">العيادة</label>
+            <select class="form-select" x-model="formData.clinic" @change="loadDoctors()"
+              @blur="validateField('clinic')">
+              <option value="">اختر العيادة</option>
+              <template x-for="clinic in clinics" :key="clinic.id">
+                <option :value="clinic.id" x-text="clinic.name"></option>
+              </template>
+            </select>
+            <div class="text-danger" x-show="touched.clinic && errors.clinic" x-text="errors.clinic"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">الطبيب</label>
+            <select class="form-select" x-model="formData.doctor" @change="loadAppointments()"
+              @blur="validateField('doctor')" :disabled="!formData.clinic">
+              <option value="">اختر الطبيب</option>
+              <template x-for="doctor in doctors" :key="doctor.id">
+                <option :value="doctor.id" x-text="doctor.name"></option>
+              </template>
+            </select>
+            <div class="text-danger" x-show="touched.doctor && errors.doctor" x-text="errors.doctor"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label required">الموعد</label>
+            <select class="form-select" x-model="formData.appointment" @blur="validateField('appointment')"
+              :disabled="!formData.doctor">
+              <option value="">اختر الموعد</option>
+              <template x-for="appointment in appointments" :key="appointment.id">
+                <option :value="appointment.id" x-text="appointment.time"></option>
+              </template>
+            </select>
+            <div class="text-danger" x-show="touched.appointment && errors.appointment" x-text="errors.appointment">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">المستندات الداعمة</label>
+            <div class="supporting-docs-container">
+              <template x-for="(doc, index) in supportingDocs" :key="index">
+                <div class="supporting-doc">
+                  <div class="row g-2">
+                    <div class="col">
+                      <input type="text" class="form-control" placeholder="عنوان المستند" x-model="doc.title">
+                    </div>
+                    <div class="col">
+                      <input type="file" class="form-control" @change="handleFileSelect($event, index)">
+                    </div>
+                    <div class="col-auto">
+                      <button type="button" class="btn btn-danger" @click="removeSupportingDoc(index)">حذف</button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+            <button type="button" class="btn btn-secondary mt-2" @click="addSupportingDoc()">
+              إضافة مستند داعم
+            </button>
+            <div class="form-text">يمكنك رفع صور الأشعة أو التقارير الطبية (اختياري)</div>
+          </div>
+        </div>
+
+        <!-- Step 4: Summary -->
+        <div x-show="currentStep === 4">
+          <h3 class="card-title mb-4">ملخص الاستشارة</h3>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>معلومات المريض</h5>
+              <p>الاسم: <span x-text="formData.name"></span></p>
+              <p>تاريخ الميلاد: <span x-text="formData.birthDate"></span></p>
+              <p>الجنس: <span x-text="formData.gender === 'male' ? 'ذكر' : 'أنثى'"></span></p>
+              <p>رقم الجوال: <span x-text="formData.mobile"></span></p>
+              <p>رقم الهوية: <span x-text="formData.nationalId"></span></p>
+            </div>
+            <div class="col-md-6">
+              <h5>تفاصيل الحالة</h5>
+              <p>وصف المشكلة: <span x-text="formData.description"></span></p>
+              <p>مدة الأعراض: <span x-text="formData.symptomsDuration"></span></p>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <h5>تفاصيل الموعد</h5>
+              <p>العيادة: <span x-text="getClinicName(formData.clinic)"></span></p>
+              <p>الطبيب: <span x-text="getDoctorName(formData.doctor)"></span></p>
+              <p>الموعد: <span x-text="getAppointmentTime(formData.appointment)"></span></p>
+            </div>
+          </div>
+
+          <template x-if="supportingDocs.length > 0">
+            <div class="mt-4">
+              <h5>المستندات الداعمة:</h5>
+              <template x-for="(doc, index) in supportingDocs" :key="index">
+                <div class="supporting-doc-summary">
+                  <span x-text="doc.title"></span>
+                  <button type="button" class="btn btn-sm btn-danger" @click="removeSupportingDoc(index)">
+                    حذف
+                  </button>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+          <button class="btn btn-secondary" @click="previousStep()" x-show="currentStep > 1">
+            السابق
+          </button>
+          <button class="btn btn-primary" @click="currentStep < 4 ? nextStep() : submitForm()"
+            x-text="currentStep < 4 ? 'التالي' : 'تأكيد الحجز'">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/beneficiary/consultation-request.js"></script>
+</body>
+
+</html>

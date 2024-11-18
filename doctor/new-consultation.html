@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>استشارة جديدة - خدمة زمزم للاستشارات الصحية</title>
+  <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">خدمة زمزم للاستشارات الصحية</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/doctor/new-consultation.html">استشارة جديدة</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/doctor/consultation-list.html">قائمة الاستشارات</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5" x-data="newConsultation">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title mb-4">استشارة جديدة</h3>
+
+        <form @submit.prevent="submitForm">
+          <div class="row g-3">
+            <!-- Patient Information -->
+            <div class="col-md-6">
+              <label class="form-label required">الاسم الكامل</label>
+              <input type="text" class="form-control" x-model="formData.name" @blur="validateField('name')">
+              <div class="text-danger" x-show="errors.name" x-text="errors.name"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">تاريخ الميلاد</label>
+              <input type="date" class="form-control" x-model="formData.birthDate" @blur="validateField('birthDate')">
+              <div class="text-danger" x-show="errors.birthDate" x-text="errors.birthDate"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">الجنس</label>
+              <select class="form-select" x-model="formData.gender" @blur="validateField('gender')">
+                <option value="">اختر الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+              <div class="text-danger" x-show="errors.gender" x-text="errors.gender"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">رقم الجوال</label>
+              <input type="tel" class="form-control" x-model="formData.mobile" @blur="validateField('mobile')">
+              <div class="text-danger" x-show="errors.mobile" x-text="errors.mobile"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">رقم الهوية</label>
+              <input type="text" class="form-control" x-model="formData.nationalId" @blur="validateField('nationalId')">
+              <div class="text-danger" x-show="errors.nationalId" x-text="errors.nationalId"></div>
+            </div>
+
+            <!-- Consultation Details -->
+            <div class="col-12">
+              <label class="form-label required">وصف المشكلة الصحية</label>
+              <textarea class="form-control" rows="4" x-model="formData.description" @blur="validateField('description')"></textarea>
+              <div class="text-danger" x-show="errors.description" x-text="errors.description"></div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label required">مدة ظهور الأعراض</label>
+              <input type="text" class="form-control" x-model="formData.symptomsDuration" @blur="validateField('symptomsDuration')">
+              <div class="text-danger" x-show="errors.symptomsDuration" x-text="errors.symptomsDuration"></div>
+            </div>
+
+            <!-- Clinic Selection -->
+            <div class="col-md-6">
+              <label class="form-label required">العيادة</label>
+              <select class="form-select" x-model="formData.clinic" @change="loadDoctors()" @blur="validateField('clinic')">
+                <option value="">اختر العيادة</option>
+                <template x-for="clinic in clinics" :key="clinic.id">
+                  <option :value="clinic.id" x-text="clinic.name"></option>
+                </template>
+              </select>
+              <div class="text-danger" x-show="errors.clinic" x-text="errors.clinic"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">الطبيب</label>
+              <select class="form-select" x-model="formData.doctor" @blur="validateField('doctor')" :disabled="!formData.clinic">
+                <option value="">اختر الطبيب</option>
+                <template x-for="doctor in doctors" :key="doctor.id">
+                  <option :value="doctor.id" x-text="doctor.name"></option>
+                </template>
+              </select>
+              <div class="text-danger" x-show="errors.doctor" x-text="errors.doctor"></div>
+            </div>
+
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">بدء الاستشارة</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/doctor/js/new-consultation.js"></script>
+</body>
+</html>

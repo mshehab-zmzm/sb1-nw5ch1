@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بدء استشارة جديدة - خدمة زمزم للاستشارات الصحية</title>
+  <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .required::after {
+      content: " *";
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">خدمة زمزم للاستشارات الصحية</a>
+    </div>
+  </nav>
+
+  <div class="container my-5" x-data="doctorConsultation">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title mb-4">بدء استشارة جديدة</h3>
+
+        <form @submit.prevent="submitForm">
+          <div class="row g-3">
+            <!-- Patient Information -->
+            <div class="col-md-6">
+              <label class="form-label required">رقم الملف الطبي</label>
+              <input type="text" class="form-control" x-model="formData.medicalFileNumber" @blur="validateField('medicalFileNumber')">
+              <div class="text-danger" x-show="errors.medicalFileNumber" x-text="errors.medicalFileNumber"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">اسم المريض</label>
+              <input type="text" class="form-control" x-model="formData.patientName" @blur="validateField('patientName')">
+              <div class="text-danger" x-show="errors.patientName" x-text="errors.patientName"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">العمر</label>
+              <input type="number" class="form-control" x-model="formData.age" @blur="validateField('age')">
+              <div class="text-danger" x-show="errors.age" x-text="errors.age"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">الجنس</label>
+              <select class="form-select" x-model="formData.gender" @blur="validateField('gender')">
+                <option value="">اختر الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+              <div class="text-danger" x-show="errors.gender" x-text="errors.gender"></div>
+            </div>
+
+            <!-- Consultation Details -->
+            <div class="col-12">
+              <label class="form-label required">الشكوى الرئيسية</label>
+              <textarea class="form-control" rows="3" x-model="formData.chiefComplaint" @blur="validateField('chiefComplaint')"></textarea>
+              <div class="text-danger" x-show="errors.chiefComplaint" x-text="errors.chiefComplaint"></div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label required">التاريخ المرضي</label>
+              <textarea class="form-control" rows="3" x-model="formData.medicalHistory" @blur="validateField('medicalHistory')"></textarea>
+              <div class="text-danger" x-show="errors.medicalHistory" x-text="errors.medicalHistory"></div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">الأدوية الحالية</label>
+              <textarea class="form-control" rows="2" x-model="formData.currentMedications"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label required">الفحص السريري</label>
+              <textarea class="form-control" rows="3" x-model="formData.clinicalExamination" @blur="validateField('clinicalExamination')"></textarea>
+              <div class="text-danger" x-show="errors.clinicalExamination" x-text="errors.clinicalExamination"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">التشخيص</label>
+              <input type="text" class="form-control" x-model="formData.diagnosis" @blur="validateField('diagnosis')">
+              <div class="text-danger" x-show="errors.diagnosis" x-text="errors.diagnosis"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label required">خطة العلاج</label>
+              <input type="text" class="form-control" x-model="formData.treatmentPlan" @blur="validateField('treatmentPlan')">
+              <div class="text-danger" x-show="errors.treatmentPlan" x-text="errors.treatmentPlan"></div>
+            </div>
+
+            <!-- Prescription -->
+            <div class="col-12">
+              <h5 class="mt-3 mb-3">الوصفة الطبية</h5>
+              <template x-for="(medicine, index) in formData.prescription" :key="index">
+                <div class="row g-2 mb-2">
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="اسم الدواء" x-model="medicine.name">
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="الجرعة" x-model="medicine.dosage">
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="المدة" x-model="medicine.duration">
+                  </div>
+                  <div class="col-auto">
+                    <button type="button" class="btn btn-danger" @click="removeMedicine(index)">حذف</button>
+                  </div>
+                </div>
+              </template>
+              <button type="button" class="btn btn-secondary mt-2" @click="addMedicine">
+                إضافة دواء
+              </button>
+            </div>
+
+            <!-- Notes -->
+            <div class="col-12">
+              <label class="form-label">ملاحظات إضافية</label>
+              <textarea class="form-control" rows="2" x-model="formData.notes"></textarea>
+            </div>
+
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">حفظ الاستشارة</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/doctor/consultation.js"></script>
+</body>
+</html>
